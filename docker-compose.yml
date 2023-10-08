@@ -1,0 +1,26 @@
+version: '1'
+services:
+  db:
+    image: mysql:5.7
+    ports:
+      -3306:3306
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environnement:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+      MYSQL_DATABASE: db_urlapp
+      MYSQL_USER: root
+      MYSQL_PASSWORD: my-secret-pw
+  api_service:
+    build: ./UrlApi
+    restart: always
+    ports: 9001:9001  
+    depends_on:
+      - db  
+  web_app:
+    build: ./UrlWebApp
+    restart: always
+    ports: 9000:9000  
+    depends_on:
+      - api_service  
