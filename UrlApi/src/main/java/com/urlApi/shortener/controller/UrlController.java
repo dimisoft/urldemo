@@ -1,6 +1,7 @@
 package com.urlApi.shortener.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
  import org.springframework.web.bind.annotation.RequestBody;
@@ -18,28 +19,30 @@ public class UrlController {
 
 		 
 		@PostMapping("/urlshortener")
-		public Url createUrl(@RequestBody Url url) {
-				return urlService.createUrl(url);
+		public ResponseEntity<Url> createUrl(@RequestBody Url url) {
+				
+			Url shorturl = urlService.createUrl(url);;
+				return ResponseEntity.ok(shorturl);
 			 
 		}
 		
 
 		 
 		@PostMapping("/getUrl")
-		public Url getUrl(@RequestBody Url url) {
-				return urlService.getUrl(url.getShortUrl());
+		public ResponseEntity<Url>  getUrl(@RequestBody Url url) {
+			Url fullurl = urlService.getUrl(url.getShortUrl());
+				return ResponseEntity.ok(fullurl);
 			 
 		}
 		
 
 		 
 		@GetMapping("/")
-		public Iterable<Url> getUrls() {
-				return urlService.getAllUrls();
-			 
+		public ResponseEntity<Iterable<Url>> getUrls() {
+			Iterable<Url> liste= urlService.getAllUrls();
+			   return ResponseEntity.status(200).body(liste);
 		}
 		
-		
-		
+
 	
 	}

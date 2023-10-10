@@ -1,0 +1,7 @@
+CREATE DATABASE IF NOT EXISTS db_urlapp;
+USE db_urlapp;
+CREATE TABLE IF NOT EXISTS urls (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    short_url VARCHAR(25),
+    full_url VARCHAR(255)
+);

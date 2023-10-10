@@ -1,26 +1,48 @@
-version: '1'
+version: '3.8'
+
 services:
   db:
-    image: mysql:5.7
+    image: mysql:8.0
     ports:
-      -3306:3306
+      - "3306:3306"
+    networks:
+      - mynet
     volumes:
       - db_data:/var/lib/mysql
+      - .:/docker-entrypoint-initdb.d
     restart: always
-    environnement:
-      MYSQL_ROOT_PASSWORD: my-secret-pw
-      MYSQL_DATABASE: db_urlapp
-      MYSQL_USER: root
-      MYSQL_PASSWORD: my-secret-pw
+    environment:
+      MYSQL_ROOT_PASSWORD: 'my-secret-pw'
+      MYSQL_DATABASE: 'db_urlapp'
+      MYSQL_USER: 'urluser'
+      MYSQL_PASSWORD: 'my-secret-pw'
   api_service:
     build: ./UrlApi
     restart: always
-    ports: 9001:9001  
+    environment:
+      - spring.datasource.url=jdbc:mysql://db:3306/db_urlapp?enabledTLSProtocols=TLSv1.2&useSSL=false&allowPublicKeyRetrieval=true
+    ports: 
+      - "9001:9001"  
     depends_on:
-      - db  
+      - db
+    networks:
+      - mynet
   web_app:
     build: ./UrlWebApp
     restart: always
-    ports: 9000:9000  
+    ports: 
+      - "9000:9000"
+    environment:
+      - microservice.shortener.apiUrl=http://api_service:9001
     depends_on:
-      - api_service  
+      - api_service
+    networks:
+      - mynet
+
+networks:
+  mynet:
+    driver: bridge
+
+volumes:
+  db_data:
+    driver: local
